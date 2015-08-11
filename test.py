@@ -9,7 +9,6 @@ import os
 from libmproxy import controller, proxy
 from libmproxy.proxy.server import ProxyServer
 
-#test12123
 class StickyMaster(controller.Master):
     def __init__(self, server):
         controller.Master.__init__(self, server)
