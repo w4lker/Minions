@@ -1,4 +1,4 @@
-python27
+python
 mitmproxy
 django
 sqlite3
