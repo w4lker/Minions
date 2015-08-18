@@ -11,7 +11,7 @@ class db:
         if conn is not None:
             return conn.cursor()
         else:
-            print "something wrong with database"
+            print "something wrong with database!"
             
     def closedb(cur):
         try:
