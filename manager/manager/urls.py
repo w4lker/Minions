@@ -22,7 +22,9 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login$','webmanager.views.login',name='login'),
     url(r'^index','webmanager.views.index',name='login'),
-    url(r'^login_check','webmanager.views.login_check',name='login1')
+    url(r'^login_check','webmanager.views.login_check',name='login1'),
+    url(r'^login_out','webmanager.views.login_out',name='login1'),
+    url(r'^test','webmanager.views.test',name='login1'),
 ]
 
 urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)  
