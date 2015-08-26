@@ -25,6 +25,8 @@ urlpatterns = [
     url(r'^login_check','webmanager.views.login_check',name='login1'),
     url(r'^login_out','webmanager.views.login_out',name='login1'),
     url(r'^test','webmanager.views.test',name='login1'),
+    url(r'^edit_profile','webmanager.views.edit_profile',name='login1'),
+    url(r'^user_profile','webmanager.views.user_profile',name='login1'),
 ]
 
 urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)  
