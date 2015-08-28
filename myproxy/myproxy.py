@@ -24,6 +24,7 @@ class StickyMaster(controller.Master):
 
     def handle_request(self, flow):
         hid = (flow.request.host, flow.request.port)
+        print flow.request.method
         print flow.request.url
         print flow.request.headers
         if flow.request.headers["cookie"]:
@@ -34,6 +35,7 @@ class StickyMaster(controller.Master):
 
     def handle_response(self, flow):
         hid = (flow.request.host, flow.request.port)
+        print type(flow.response.status_code)
         if flow.response.headers["set-cookie"]:
             self.stickyhosts[hid] = flow.response.headers["set-cookie"]
         flow.reply()
