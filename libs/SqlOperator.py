@@ -17,7 +17,7 @@ class SqlOperator:
         self._cur = self._conn.cursor()
         print "连接成功!"
     
-    def close(self):
+    def close(self):  
         self._cur.close()
         self._conn.close()
     

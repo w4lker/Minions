@@ -4,21 +4,20 @@
 import sqlite3
 import string
 
-class db:
+class database:
     conn = None
     def connectdb(self,path):
         self.conn = sqlite3.connect(path)
-        if conn is not None:
-            return conn.cursor()
+        if self.conn is not None:
+            return self.conn.cursor()
         else:
             print "something wrong with database!"
             
-    def closedb(cur):
-        try:
-            if cur is None:
-                cur.close()
-        finally:
+    def closedb(self,cur):              #query和modify会调用closedb()，无需再关闭
+        if cur is not None:
             cur.close()
+            self.conn.close()
+            return True
           
           
     def query(self,cur,sql):
@@ -29,12 +28,11 @@ class db:
             self.closedb(cur)
         else:
             print "sqlCommand can not be null!"
-
-    #create,drop,insert,upate,delete统一为数据库的修改    
-    def  modify(self,cur,sql):                                 
+   
+    def  modify(self,cur,sql):
         if sql is not None and sql != '':
             cur.execute(sql)
-            conn.commit()
+            self.conn.commit()
             self.closedb(cur)
         else:
             print "sqlCommand can not be null!"        

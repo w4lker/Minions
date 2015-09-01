@@ -24,18 +24,6 @@ class StickyMaster(controller.Master):
 
     def handle_request(self, flow):
         hid = (flow.request.host, flow.request.port)
-        httpversion = "HTTP/" + str(flow.request.httpversion[0]) + '.' + str(flow.request.httpversion[1])
-#        req = flow.request.method + flow.request.headers + flow.request.body
-#        print req
-        req = flow.request.method +' ' + flow.request.url + ' ' + httpversion + '\n'
-        for key,value in flow.request.headers:
-            req += key + ':' +' ' + value + '\n'
-        req += '\n' + flow.request.body
-        db = database()
-        cur = db.connectdb('./db.sqlite3')
-        sqlcmd = "insert into webmanager_inspector (method,host,url,request)values('"+flow.request.method+"','"+flow.request.host+"','"+flow.request.url+"','"+req+"')"
-        db.modify(cur,sqlcmd)
-        db.close()
         if flow.request.headers["cookie"]:
             self.stickyhosts[hid] = flow.request.headers["cookie"]
         elif hid in self.stickyhosts:
@@ -45,16 +33,32 @@ class StickyMaster(controller.Master):
         
     def handle_response(self, flow):
         hid = (flow.request.host, flow.request.port)
-        httpversion = "HTTP/" + str(flow.response.httpversion[0]) + '.' + str(flow.response.httpversion[1])
-        rep = httpversion +' ' + str(flow.response.status_code) +' ' + flow.response.msg + '\n'
-        for key,value in flow.response.headers:
-                rep += key + ':' +' ' + value + '\n'
-        rep += '\n' + flow.request.body
-#        print rep
-        
+        req = self.get_raw_req(flow)
+        rsp = self.get_raw_rsp(flow)
+        db = database()
+        cur = db.connectdb('./db.sqlite3')
+        sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,timestamp)values(%d,'%s','%s','%s','%s','%s',%f)''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,flow.request.timestamp_start)
+        db.modify(cur,sqlcmd)        
         if flow.response.headers["set-cookie"]:
             self.stickyhosts[hid] = flow.response.headers["set-cookie"]
         flow.reply()
+    
+    def get_raw_req(self,flow):
+        httpversion = "HTTP/" + str(flow.request.httpversion[0]) + '.' + str(flow.request.httpversion[1])
+        req = flow.request.method +' ' + flow.request.url + ' ' + httpversion + '\n'
+        for key,value in flow.request.headers:
+            req += key + ':' +' ' + value + '\n'
+        req += '\n' + flow.request.body 
+        return req
+    
+    def get_raw_rsp(self,flow):
+        httpversion = "HTTP/" + str(flow.response.httpversion[0]) + '.' + str(flow.response.httpversion[1])
+        rsp = httpversion +' ' + str(flow.response.status_code) +' ' + flow.response.msg + '\n'
+        for key,value in flow.response.headers:
+            rsp += key + ':' +' ' + value + '\n'
+        rsp += '\n' + flow.request.body 
+        return rsp
+        
 
 
 

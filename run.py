@@ -1,4 +1,5 @@
-#启动脚本，程序入口，负责启动代理和Django的web服务
+#coding:utf-8
+#鍚姩鑴氭湰锛岀▼搴忓叆鍙ｏ紝璐熻矗鍚姩浠ｇ悊鍜孌jango鐨剋eb鏈嶅姟
 
 import os
 from libmproxy import controller, proxy
@@ -11,6 +12,7 @@ config = proxy.ProxyConfig(port=8088)
 server = ProxyServer(config)
 m = StickyMaster(server)
 m.run()
+
 
 
 

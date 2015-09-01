@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^test','webmanager.views.test',name='login1'),
     url(r'^user/edit','webmanager.views.user_edit',name='login1'),
     url(r'^user/profile','webmanager.views.user_profile',name='login1'),
+    url(r'^data/proxy','webmanager.views.data_proxy',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]
 

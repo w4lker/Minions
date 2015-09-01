@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
 from django.db import connection,transaction
-from webmanager.models import Users
+from webmanager.models import *
 from hashlib import md5
 
 # Create your views here.
@@ -93,7 +93,17 @@ def user_edit(request):
             
         else:
             response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-            return response                     
+            return response 
+
+def data_proxy(request):
+    if request.session.get('username') != None:
+        #return render(request, 'webmanager/template/data_proxy.html',{'page_title':'主页'})
+        data = Proxydata.objects.all()
+        return render(request, 'webmanager/template/data_proxy.html',{'page_title':'主页','proxydata':data})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response 
      
         
         
