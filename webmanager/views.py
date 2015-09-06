@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.db import connection,transaction
 from webmanager.models import *
 from hashlib import md5
-
+import re
 # Create your views here.
 @csrf_protect
 
@@ -104,9 +104,26 @@ def data_proxy(request):
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response 
-     
-        
-        
+
+def data_details(request,param):
+    if request.session.get('username') != None:
+        #return render(request, 'webmanager/template/data_proxy.html',{'page_title':'主页'})
+        data = Proxydata.objects.get(id=param)
+        return render(request, 'webmanager/template/test.html',{'page_title':'主页','data':data})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response     
+    
+def data_replay(request):
+    data = Proxydata.objects.get(id=1)
+    return render(request, 'webmanager/template/test.html',{'page_title':'主页','data':data})    
+
+def data_split(data):
+    r_content=re.compile(r'\n\n')
+    
+    
+
     
     
         

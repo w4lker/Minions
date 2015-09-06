@@ -224,38 +224,51 @@ License: You must have a valid license purchased only from themeforest(the above
 									<thead>
             <tr>
                 <th>ID</th>
-                <th>status</th>
                 <th>method</th>
                 <th>host</th>
                 <th>URL</th>
-                <th>timestamp</th>
+				<th>status</th>
+                <th>details</th>
             </tr>
         </thead>
  									<tfoot>
             <tr>
                 <th>ID</th>
-                <th>status</th>
                 <th>method</th>
                 <th>host</th>
                 <th>URL</th>
-                <th>timestamp</th>
+				<th>status</th>
+                <th>details</th>
+            </tr>
             </tr>
         </tfoot>
  									<tbody>
 									{% for data in proxydata %}
+									
 										<tr>
-											<td>{{data.id}}</td>
-											<td>{{data.status_code}}</td>
+											
+											<td><a data-toggle="modal" data-target="#myModal" href="test.html">{{data.id}}</a></td>
 											<td>{{data.method}}</td>
 											<td>{{data.host}}</td>
 											<td>{{data.url}}</td>
-											<td>{{data.timestamp}}</td>
+											<td>{{data.status_code}}</td>
+											<!--<td><a data-toggle="modal" data-target="#myModal" href="data/details/{{data.id}}">详情</a></td>-->
+											<td><a data-toggle="modal" data-target="#myModal" href="details/{{data.id}}/">详情</a></td>
 										</tr>
+									
 									{% endfor %}
 									</tbody>
 								</table>
-
-						<!-- END FORM-->
+							<!--start modal-->
+							<div class="modal fade modal-scroll" id="myModal" role="basic" aria-hidden="true" data-replace="true">
+								<div class="modal-dialog" style="width: 1000px;">
+									<div class="modal-content">
+										<div class="modal-body">
+										</div>
+									</div>
+								</div>
+							</div>
+						<!-- END modal-->
 						</div>
 					</div>
 					<!-- END VALIDATION STATES-->

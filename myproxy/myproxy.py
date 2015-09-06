@@ -10,6 +10,7 @@ from libmproxy import controller, proxy
 from libmproxy.proxy.server import ProxyServer
 import sys
 from libs.db import database
+import string
 
 class StickyMaster(controller.Master):
     def __init__(self, server):
@@ -48,7 +49,8 @@ class StickyMaster(controller.Master):
         req = flow.request.method +' ' + flow.request.url + ' ' + httpversion + '\n'
         for key,value in flow.request.headers:
             req += key + ':' +' ' + value + '\n'
-        req += '\n' + flow.request.body 
+        req += '\n' + flow.request.body.decode('UTF-8') 
+        req = req.replace("'","''")
         return req
     
     def get_raw_rsp(self,flow):
@@ -56,7 +58,8 @@ class StickyMaster(controller.Master):
         rsp = httpversion +' ' + str(flow.response.status_code) +' ' + flow.response.msg + '\n'
         for key,value in flow.response.headers:
             rsp += key + ':' +' ' + value + '\n'
-        rsp += '\n' + flow.request.body 
+        rsp += '\n' + flow.response.body.decode('UTF-8') 
+        rsp = rsp.replace("'","''")
         return rsp
         
 
