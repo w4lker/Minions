@@ -247,7 +247,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									
 										<tr>
 											
-											<td><a data-toggle="modal" data-target="#myModal" href="test.html">{{data.id}}</a></td>
+											<td>{{data.id}}</td>
 											<td>{{data.method}}</td>
 											<td>{{data.host}}</td>
 											<td>{{data.url}}</td>
@@ -335,6 +335,9 @@ Layout.init(); // init current layout
 QuickSidebar.init(); // init quick sidebar
 Demo.init(); // init demo features
 $('#example').DataTable();
+$.ajaxSetup({
+		data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+	});
 });
 </script>
 <!-- END JAVASCRIPTS -->

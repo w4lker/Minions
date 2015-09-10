@@ -3,10 +3,17 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.db import connection,transaction
 from webmanager.models import *
 from hashlib import md5
+import sys
 import re
+import urllib2
+import gzip
+import StringIO
+import string
+
 # Create your views here.
 @csrf_protect
 
@@ -109,19 +116,67 @@ def data_details(request,param):
     if request.session.get('username') != None:
         #return render(request, 'webmanager/template/data_proxy.html',{'page_title':'主页'})
         data = Proxydata.objects.get(id=param)
-        return render(request, 'webmanager/template/test.html',{'page_title':'主页','data':data})
+        return render(request, 'webmanager/template/data_detail.html',{'page_title':'主页','request':data.request,'response':data.response})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response     
     
 def data_replay(request):
-    data = Proxydata.objects.get(id=1)
-    return render(request, 'webmanager/template/test.html',{'page_title':'主页','data':data})    
+    print request.POST['request']
+    response = http_request(request.POST['request'])
+    data = {'response':''}
+    data['response'] = response
+    return JsonResponse(data)    
 
 def data_split(data):
-    r_content=re.compile(r'\n\n')
+    r_content=re.compile(r'\n\n(.*)')
+    r_url=re.compile(r'\s(.*)\sHTTP/1')
+    r_headers=re.compile(r'(.+):\s(.+)')
+    url = re.findall(r_url,data)
+    header = {}
+    headers = re.findall(r_headers,data)
+    for h in headers:
+        header[h[0]] = h[1]
+    content = re.findall(r_content,data)
+    if content == []:
+        content = ['']   
     
+    request = {}
+    request['url'] = url[0]    #正则匹配返回的是list，取出其中字符串的值
+    request['header'] = header
+    request['content'] = content[0]
+    return request
+
+def http_request(data):
+    request = data_split(data)
+    try:
+        req = urllib2.Request(url= request['url'],headers=request['header'],data=request['content'])
+        rsp = urllib2.urlopen(req)
+        code = rsp.code
+        msg = rsp.msg
+        headers = rsp.headers
+        if rsp.info().get('Content-Encoding') == 'gzip':
+            data = StringIO.StringIO(rsp.read())
+            gzip.GzipFile()
+            content = gzip.GzipFile(fileobj=data).read()
+        else:
+            content = rsp.read()
+    except urllib2.HTTPError,e:
+        code = e.code
+        msg = e.msg
+        headers = e.headers
+        content = e.read()
+    except urllib2.URLError,e:
+        response = e.reason
+        return response
+    response = '''HTTP/1.1 %d %s\n%s\n\n%s''' % (code,msg,headers,content)
+    return response
+
+def ajax_test(request):
+    print request
+    response = {'test':'123'}
+    return JsonResponse(response)
     
 
     

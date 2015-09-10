@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^data/proxy','webmanager.views.data_proxy',name='login1'),
     url(r'^data/replay','webmanager.views.data_replay',name='login1'),
     url(r'^data/details/(\d+)/$','webmanager.views.data_details',name='login1'),
+    url(r'^ajax_test$','webmanager.views.ajax_test',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]
 

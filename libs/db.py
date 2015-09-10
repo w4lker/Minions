@@ -13,7 +13,7 @@ class database:
         else:
             print "something wrong with database!"
             
-    def closedb(self,cur):              #query和modify会调用closedb()，无需再关闭
+    def closedb(self,cur):              
         if cur is not None:
             cur.close()
             self.conn.close()
@@ -23,9 +23,8 @@ class database:
     def query(self,cur,sql):
         if sql is not None and sql != '':
             cur.execute(sql)
-            data = self.cur.fetchall()
-            print data
-            self.closedb(cur)
+            data = cur.fetchall()
+            return data
         else:
             print "sqlCommand can not be null!"
    
@@ -33,7 +32,6 @@ class database:
         if sql is not None and sql != '':
             cur.execute(sql)
             self.conn.commit()
-            self.closedb(cur)
         else:
             print "sqlCommand can not be null!"        
             
