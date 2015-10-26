@@ -13,7 +13,7 @@ import urllib2
 import gzip
 import StringIO
 import string
-
+import base64
 # Create your views here.
 @csrf_protect
 
@@ -22,11 +22,22 @@ def login(request):
 
 def index(request):
     if request.session.get('username') != None:
-        return render(request, 'webmanager/template/index2.html',{'page_title':'主页'})
+        menus = Menu.objects.order_by('pri').all()
+        for menu in menus:
+            print menu.title
+        return render(request, 'webmanager/template/indexa.html',{'page_title':'主页','menus':menus})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-        return response        
+        return response  
+
+def index_page(request):
+    if request.session.get('username') != None:
+        return render(request, 'webmanager/template/index_page.html',{'page_title':'主页'})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response      
 
 def login_check(request):
     user = Users.objects.get(id=1)
@@ -77,30 +88,38 @@ def user_edit(request):
             return response 
         
     elif request.method == 'POST':
+        res = {'code':0,'hint':''}
         if request.session.get('username') != None:
             if request.POST['pass'] != '' and request.POST['new_pass'] != '' and request.POST['re_pass'] !='':
                 if request.POST['new_pass'] != request.POST['re_pass']:
+                    res['hint'] = '请确定两次新密码一致!'
                     response.write('<html><script type="text/javascript">alert("请确定两次新密码一致!");</script></html>')
-                    return response
+                    #return response
                 else:
                     uname = request.session.get('username')
                     user = Users.objects.get(username = uname)
                     if user.password == md5(request.POST['pass']).hexdigest():
                         user.password = md5(request.POST['new_pass']).hexdigest()
                         user.save()
+                        res['code'] = 1
+                        res['hint'] = '修改成功'
                         response.write('<html><script type="text/javascript">alert("修改成功");window.location="/user_profile"</script></html>')
-                        return response                         
+                        #return response                         
                             
                     else:
+                        res['hint'] = '原密码错误'
                         response.write('<html><script type="text/javascript">alert("原密码错误!");window.location="/edit_profile"</script></html>')
-                        return response    
+                        #return response    
             else:
+                res['hint'] = '请将表单填写完整！'
                 response.write('<html><script type="text/javascript">alert("请将表单填写完整!");window.location="/edit_profile"</script></html>')
-                return response            
+                #return response            
             
         else:
+            res['hint'] = '接头暗号：天王盖地虎,小鸡炖蘑菇!'
             response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-            return response 
+            #return response
+        return JsonResponse(res)
 
 def data_proxy(request):
     if request.session.get('username') != None:
@@ -177,8 +196,26 @@ def ajax_test(request):
     print request
     response = {'test':'123'}
     return JsonResponse(response)
-    
 
+
+def menu_list(request):
+    if request.session.get('username') != None:
+        #return render(request, 'webmanager/template/data_proxy.html',{'page_title':'主页'})
+        mlist = Menu.objects.all()
+        return render(request, 'webmanager/template/menu_list.html',{'page_title':'菜单列表','mlist':mlist})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response     
+
+def menu_edit(request,param):
+    if request.session.get('username') != None:
+        Menu = Menu.objects.get(id=param)
+        return render(request, 'webmanager/template/data_detail.html',{'page_title':'主页','request':data.request,'response':data.response})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response     
     
     
         

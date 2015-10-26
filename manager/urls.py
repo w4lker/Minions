@@ -21,6 +21,7 @@ from django.conf import settings
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login$','webmanager.views.login',name='login'),
+    url(r'^index_page','webmanager.views.index_page',name='page'),
     url(r'^index','webmanager.views.index',name='login'),
     url(r'^login/check','webmanager.views.login_check',name='login1'),
     url(r'^login/out','webmanager.views.login_out',name='login1'),
@@ -30,8 +31,10 @@ urlpatterns = [
     url(r'^data/proxy','webmanager.views.data_proxy',name='login1'),
     url(r'^data/replay','webmanager.views.data_replay',name='login1'),
     url(r'^data/details/(\d+)/$','webmanager.views.data_details',name='login1'),
+    url(r'^menu/list$','webmanager.views.menu_list',name='menu'),
+    url(r'^menu/edit/(\d+)/$','webmanager.views.menu_edit',name='menu'),
     url(r'^ajax_test$','webmanager.views.ajax_test',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]
 
-urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)  
+#urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)  

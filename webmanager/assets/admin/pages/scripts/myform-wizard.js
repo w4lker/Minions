@@ -25,17 +25,17 @@ var FormWizard = function () {
                 rules: {
                     //account
                     pass: {
-                        minlength: 5,
+                        minlength: 8,
                         required: true
                     },
                     new_pass: {
-                        minlength: 5,
+                        minlength: 8,
                         required: true
                     },
                     re_pass: {
-                        minlength: 5,
+                        minlength: 8,
                         required: true,
-                        equalTo: "#submit_form_password"
+                        equalTo: "#new_pass"
                     },
                     //profile
 

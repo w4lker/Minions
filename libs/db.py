@@ -7,7 +7,7 @@ import string
 class database:
     conn = None
     def connectdb(self,path):
-        self.conn = sqlite3.connect(path)
+        self.conn = sqlite3.connect(path,check_same_thread = False)
         if self.conn is not None:
             return self.conn.cursor()
         else:

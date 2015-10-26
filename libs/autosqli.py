@@ -3,6 +3,8 @@
 import requests
 import time
 import json
+from libmproxy import flow
+from db import database
 
 
 class AutoSqli(object):
@@ -12,19 +14,22 @@ class AutoSqli(object):
     By Manning
     """
 
-    def __init__(self, server='', target='',data = '',referer = '',cookie = ''):
+    def __init__(self, server='', scan_flow =''):
         super(AutoSqli, self).__init__()
         self.server = server
         if self.server[-1] != '/':
             self.server = self.server + '/'
-        self.target = target
+        self.scan_flow = scan_flow
+        self.target = scan_flow.request.url
         self.taskid = ''
         self.engineid = ''
         self.status = ''
-        self.data = data
-        self.referer = referer
-        self.cookie = cookie
+        self.data = scan_flow.request.body
+        self.referer = scan_flow.request.headers['referer']
+        self.cookie = scan_flow.request.headers['cookie']
         self.start_time = time.time()
+        self.db = database()
+        self.cur = self.db.connectdb('./db.sqlite3')
 
     def task_new(self):
         self.taskid = json.loads(
@@ -48,6 +53,8 @@ class AutoSqli(object):
             requests.post(url, data=json.dumps(payload), headers=headers).text)
         self.engineid = t['engineid']
         if len(str(self.engineid)) > 0 and t['success']:
+            sqlcmd = '''insert into webmanager_sqliscan (taskid,url,request,starttime,total,status)values('%s','%s','%s','%s',%f,'%s')''' % (self.taskid,self.target,'123',self.start_time,0.0,'running')
+            self.db.modify(self.cur,sqlcmd)
             print 'Started scan'
             return True
         return False
@@ -66,9 +73,13 @@ class AutoSqli(object):
         self.data = json.loads(
             requests.get(self.server + 'scan/' + self.taskid + '/data').text)['data']
         if len(self.data) == 0:
-            print 'not injection:\t'
+            sqlcmd = '''delete from webmanager_sqliscan where taskid = '%s' ''' % self.taskid 
+            self.db.modify(self.cur,sqlcmd)
+            print 'not injected:\t'
         else:
-            print 'injection:\t' + self.target
+            sqlcmd = '''update webmanager_sqliscan set status = 'injected' where taskid = '%s'  ''' % self.taskid
+            self.db.modify(self.cur,sqlcmd)
+            print 'injected:\t' + self.target
 
     def option_set(self):
         headers = {'Content-Type': 'application/json'}
@@ -112,6 +123,3 @@ class AutoSqli(object):
         self.task_delete()
         print time.time() - self.start_time
 
-if __name__ == '__main__':
-    t = AutoSqli('http://127.0.0.1:8774', 'http://192.168.3.171/1.php?id=1')
-    t.run()
