@@ -210,8 +210,9 @@ def menu_list(request):
 
 def menu_edit(request,param):
     if request.session.get('username') != None:
-        Menu = Menu.objects.get(id=param)
-        return render(request, 'webmanager/template/data_detail.html',{'page_title':'主页','request':data.request,'response':data.response})
+        menu = Menu.objects.get(id=param)
+        fathermenu = Menu.objects.filter(fatherid=0)
+        return render(request, 'webmanager/template/menu_edit.html',{"menu":menu,"action":"菜单编辑","fathermenu":fathermenu})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
