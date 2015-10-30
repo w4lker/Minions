@@ -32,7 +32,10 @@ urlpatterns = [
     url(r'^data/replay','webmanager.views.data_replay',name='login1'),
     url(r'^data/details/(\d+)/$','webmanager.views.data_details',name='login1'),
     url(r'^menu/list$','webmanager.views.menu_list',name='menu'),
-    url(r'^menu/edit/(\d+)/$','webmanager.views.menu_edit',name='menu'),
+    url(r'^menu/edit/(\d*)','webmanager.views.menu_edit',name='menu'),
+    url(r'^menu/add','webmanager.views.menu_add',name='menu'),
+    url(r'^menu/del/(\d*)','webmanager.views.menu_del',name='menu'),
+    url(r'^vul/xss','webmanager.views.vul_xss',name='vul'),
     url(r'^ajax_test$','webmanager.views.ajax_test',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]

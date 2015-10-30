@@ -33,27 +33,29 @@
 				</li>
 				{% for menu in menus %}
 					{% if menu.fatherid == 0 %}
-						<li class="">
-						<a href="javascript:;">
-							<i class="fa fa-cogs"></i>
-							<span class="title">
-							{{menu.title}} </span>
-							<span class="selected">
-							</span>
-							<span class="arrow">
-							</span>
-						</a>
-						{% for submenu in menus%}
-							{% if submenu.fatherid == menu.id%}
-								<ul class="sub-menu" style="display: none;">
-									<li>
-										<a class="ajaxify" href="{{submenu.href}}">
-										{{submenu.title}} </a>
-									</li>
-						
-								</ul>
-							{%endif%}
-						{%endfor%}
+						<li>
+							<a href="javascript:;">
+								<i class="fa fa-cogs"></i>
+								<span class="title">
+								{{menu.title}} </span>
+								<span class="selected">
+								</span>
+								<span class="arrow">
+								</span>
+							</a>
+							<ul class="sub-menu" style="display: none;">
+							{% for submenu in menus%}
+								
+								{% if submenu.fatherid == menu.id%}
+									
+										<li>	
+											<a class="ajaxify" href="{{submenu.href}}"><i class="fa fa-send"></i>&nbsp;&nbsp;&nbsp;{{submenu.title}} </a>
+										</li>
+							
+									
+								{%endif%}
+							{%endfor%}
+							</ul>
 						</li>
 					{%endif%}
 				{%endfor%}

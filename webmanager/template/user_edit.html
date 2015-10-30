@@ -15,7 +15,7 @@
                     title=""></a></div>
                 </div>
                 <div class="portlet-body form">
-                    <form role="form" class="form-horizontal" id="submit_form" action="" methon="POST">
+                    <form role="form" class="form-horizontal" id="submit_form" action="" method="POST">
 						{% csrf_token %}
                         <div class="form-wizard">
                             <div class="form-body">
@@ -86,7 +86,7 @@
 					success: function (response) {
                         alert(response.hint);
 						if (response.code == 1){
-							$('.ajaxify.goback').click() 
+							$('.ajaxify.goback').click();
 						}
 						
                     }
