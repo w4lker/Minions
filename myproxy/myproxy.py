@@ -49,7 +49,8 @@ class StickyMaster(controller.Master):
         flow.reply()
         db = database()
         cur = db.connectdb('./db.sqlite3')
-        negative_type = db.query(cur,'''select negative_type from webmanager_setting''')[0][0].split('|')
+        negative_type = db.query(cur,'''select value from webmanager_settings where setting='negative_type' ''')#[0][0].split('|')
+        print negative_type
         if flow.response.headers['content-type'] != []:
             content_type = flow.response.headers['content-type'][0].split(';')[0].split('/')[1].lower()       #如content-type存在，过滤content-type类型为css等
         else:

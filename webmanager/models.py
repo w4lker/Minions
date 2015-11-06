@@ -18,10 +18,11 @@ class Proxydata(models.Model):
     response = models.TextField(null=True)
     timestamp = models.FloatField()
 
-class Setting(models.Model):
+class Settings(models.Model):
     id = models.IntegerField(primary_key=True)
-    negative_type = models.CharField(max_length=100)
-    sqlmap_srv = models.CharField(max_length = 30)
+    setting = models.CharField(max_length=50)
+    enabled = models.BooleanField()
+    value = models.CharField(max_length=50)
     
 class Sqliscan(models.Model):
     id = models.IntegerField(primary_key=True)

@@ -22,7 +22,7 @@ def get_raw_req(flow):
         req += key + ':' +' ' + value + '\n'
     """
     headers = get_req_header(flow)
-    req = headers + '\n' + flow.request.body 
+    req = headers + '\n' + flow.request.body
     req = req.replace("'","''")
     return req
 
@@ -35,7 +35,9 @@ def get_raw_rsp(flow):
     
     db = database()
     cur = db.connectdb('./db.sqlite3')
-    negative_type = db.query(cur,'''select negative_type from webmanager_setting''')[0][0].split('|')    
+    negative_type = db.query(cur,'''select value from webmanager_settings where setting='negetive_type' ''')
+    print negative_type
+    print type(negative_type)
     
     if flow.response.headers['content-type'] != []:
         content_type = flow.response.headers['content-type'][0].split(';')[0].split('/')[1].lower()       #如content-type存在，过滤content-type类型为css等

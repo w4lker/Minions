@@ -293,7 +293,28 @@ def vul_xss(request):
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-        return response         
+        return response
+
+def xss_poc(request,param):
+    if request.session.get('username') != None:
+        xss = Xsscan.objects.filter(taskid=param)
+        return render(request, 'webmanager/template/xss_poc.html',{'page_title':'XSS PoC','xss':xss})     
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response 
+
+def xss_del(request,param):
+    if request.session.get('username') != None:
+        xss = Xsscan.objects.filter(taskid=param)
+        xss.delete()
+        rsp = {'code':1,'hint':"删除成功"}
+        return JsonResponse(rsp)       
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response 
+    
     
     
     

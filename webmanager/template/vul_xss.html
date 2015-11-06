@@ -1,8 +1,17 @@
 ﻿<!-- BEGIN PAGE CONTENT-->
-        <div class="row" id="menu_page">
-            <div class="col-md-12">
+
+
+    <style type="text/css">
+        .popover{
+			max-width: 100%; /* Max Width of the popover (depending on the container!) */
+        }
+    </style>
+
+
+<div class="row" id="menu_page">
+    <div class="col-md-12 panel-warning">
                 <!-- BEGIN VALIDATION STATES-->
-                <div class="portlet light bordered">
+                <div class="portlet light bordered container panel-warning" >
                     <div class="portlet-title">
                         <div class="caption">Xsscan Result</div>
                         <div class="actions">
@@ -18,7 +27,7 @@
                     <div class="portlet-body">
                     <!-- BEGIN FORM-->
                     
-                    <table class="table"  id="xss_list">
+                    <table class="table table-condensed table-responsive"  id="xss_list" >
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -46,12 +55,13 @@
                                 <td>{{x.taskid}}</td>
 								<td width="400px" style="word-break:break-all">{{x.target}}</td>
                                 <td width="400px" style="word-break:break-all">{{x.heuristic}}</td>
-								<td data-format="dd/MM/yyyy hh:mm:ss">{{x.time}}</td>
+								<td class="">{{x.time|date:"Y-m-d H:i:s"}}</td>
 								 
                                 <!--<td><a data-toggle="modal" data-target="#myModal" href="data/details/{{data.id}}"></a></td>-->
                                 <td>
-                                    <a data-toggle="modal" data-target="#menuModal" href="/vul/xss/{{x.task}}" title="Payload"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-									<a name="delete" title="删除" data-id="/menu/xss/del/{{menu.id}}"><i class="fa fa-trash-o"></i></a>
+									<a href="#" data-taskid="/vul/xss/poc/{{x.taskid}}"><i class="fa fa-plus"></i></a>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a name="delete" title="删除" data-id="/menu/xss/del/{{x.taskid}}"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
 						 {% endfor %}
@@ -65,17 +75,106 @@
                             </div>
                         </div>
                     </div>
+					<div id="popover-content" class="hide" style="width:100%">  
+
+                    </div>  
                 <!-- END VALIDATION STATES-->
             </div>
         </div>
         <!-- END VALIDATION STATES-->
+	</div>
+</div>
         <!-- END PAGE CONTENT-->
 <script src="../../assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
 <script src="../../assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+
 <script>
+	
 jQuery(document).ready(function() {   
    // initiate layout and plugins
-    $("#xss_list").DataTable();
+	$('*[data-taskid]').click(function() {
+		$('.popover:visible').popover('destroy');
+        var e=$(this);
+        e.off('hover');
+		$.get(e.data('taskid'),function(d) {
+			e.popover({
+				html:true,
+				placement:'left',
+				content: d
+			});
+		});
+
+    });
+	/*
+	$('*[data-taskid]').click(function() {
+		$('.popover:visible').popover('hide');
+        var e=$(this);
+        e.off('click');
+		$.get(e.data('taskid'),function(d) {
+			e.popover({
+				html:true,
+				placement:'left',
+				content: d
+			}).popover('toggle');
+		});
+
+    });
+	$('body').click(function(){
+		$('.popover:visible').pre().popover('hide');
+	});
+	/*$('*[data-poload]').blur(function() {
+        $(this).popover('hide');
+    });
+	/*$('*[data-poload]').click(function() {
+        var e=$(this);
+        e.off('click');
+        $.get(e.data('poload'),function(d) {
+            e.popover({html:true,title:'XSS Poc',placement:'left',content: d}).popover('show');
+        });
+    });	
+	    /*$("a[name='payload']").click(function(){
+			$.get($(this).attr("data-id"), function(rsp){
+				$("#popover-content").html(rsp);
+			});
+			$(this).popover({
+				placement : 'left',
+				html : true,
+				template: '<div class="popover" role="tooltip" style="width: 1000px;"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"><div class="data-content"></div></div></div>',
+				content : function(){
+					return $("#popover-content").html();
+				}
+			});
+			$(this).popover('show');
+		});*/
+	
+	/*$("a[name='payload']").click(function(){
+		var pop = $(this);
+		pop.off('focus');
+		$.get(pop.data("poc"),function(rsp){
+			/*$(this).popover({
+				//html : true,
+				//template: '<div class="popover" role="tooltip" style="width: 1000px;"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"><div class="data-content"></div></div></div>',
+				//content : rsp
+				
+			}).popover('show');	
+			pop.popover({html:true,title:'XSS Poc',placement:'left',content: rsp}).popover('show');
+		});
+	});
+
+		/*pop.on('show.bs.popover',function(){
+			alert($(this).attr("data-id"));
+			$.get($(this).attr("data-id"), function(rsp){
+				pop.options.content = rsp;
+			});
+		});
+	});
+	$("a[name='poc']").popover({
+		html:true,
+		content:function(){
+			return $.get($(this).data('taskid'));	
+		}
+	});*/
+	$("#xss_list").DataTable();
 	$.ajaxSetup({
 							cache: false
 						});
@@ -84,9 +183,8 @@ jQuery(document).ready(function() {
 			alert(rsp.hint);
 		});
 
+	
 	});	
 			
 });
 </script>
-    </body>
-</html>

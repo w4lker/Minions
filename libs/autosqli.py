@@ -5,6 +5,7 @@ import time
 import json
 from libmproxy import flow
 from db import database
+from flowhandle import * 
 
 
 class AutoSqli(object):
@@ -47,13 +48,13 @@ class AutoSqli(object):
 
     def scan_start(self):
         headers = {'Content-Type': 'application/json'}
-        payload = {'url': self.target}
+        payload = {'url': self.target,'body':self.data}
         url = self.server + 'scan/' + self.taskid + '/start'
         t = json.loads(
             requests.post(url, data=json.dumps(payload), headers=headers).text)
         self.engineid = t['engineid']
         if len(str(self.engineid)) > 0 and t['success']:
-            sqlcmd = '''insert into webmanager_sqliscan (taskid,url,request,starttime,total,status)values('%s','%s','%s','%s',%f,'%s')''' % (self.taskid,self.target,'123',self.start_time,0.0,'running')
+            sqlcmd = '''insert into webmanager_sqliscan (taskid,url,request,starttime,total,status)values('%s','%s','%s','%s',%f,'%s')''' % (self.taskid,self.target,get_raw_req(self.scan_flow),self.start_time,0.0,'running')
             self.db.modify(self.cur,sqlcmd)
             print 'Started scan'
             return True
