@@ -26,7 +26,8 @@ class Vulscan(threading.Thread):                    #漏洞(sql注入，xss等)�
         db.closedb(cur)
         sqliscan = AutoSqli(server= sqlmap_srv,scan_flow = self.flow)
         thread.start_new_thread(sqliscan.run,())              #考虑到调用不同扫描模块，这里再次利用线程调用sqlmap
-         
+        '''
         xsserscan = XsserScan(scan_flow = self.flow) 
         thread.start_new_thread(xsserscan.run,())                #调用xsser
+        '''
 

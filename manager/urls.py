@@ -36,8 +36,10 @@ urlpatterns = [
     url(r'^menu/add','webmanager.views.menu_add',name='menu'),
     url(r'^menu/del/(\d*)','webmanager.views.menu_del',name='menu'),
     url(r'^vul/xss$','webmanager.views.vul_xss',name='vul'),
-    url(r'^vul/xss/poc/(.{32})','webmanager.views.xss_poc',name='vul'),
-    url(r'^vul/xss/del/(.{32})','webmanager.views.xss_del',name='vul'),
+    url(r'^vul/xss/poc/(.{32})','webmanager.views.vul_xss_poc',name='vul'),
+    url(r'^vul/xss/del/(.{32})','webmanager.views.vul_xss_del',name='vul'),
+    url(r'^vul/sqli$','webmanager.views.vul_sqli',name='vul'),
+    url(r'^vul/sqli/del/(.{16})','webmanager.views.vul_sqli',name='vul'),
     url(r'^ajax_test$','webmanager.views.ajax_test',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]

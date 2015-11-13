@@ -29,8 +29,7 @@ class Sqliscan(models.Model):
     taskid = models.CharField(max_length=16)
     url = models.CharField(max_length=100)
     request = models.TextField()
-    starttime = models.TimeField(auto_now_add=True)
-    total = models.FloatField()
+    time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=15)
     
 class Xsscan(models.Model):

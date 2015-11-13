@@ -35,7 +35,7 @@ def get_raw_rsp(flow):
     
     db = database()
     cur = db.connectdb('./db.sqlite3')
-    negative_type = db.query(cur,'''select value from webmanager_settings where setting='negetive_type' ''')
+    negative_type = db.query(cur,'''select value from webmanager_settings where setting='negative_type' ''')[0][0].split('|')
     print negative_type
     print type(negative_type)
     

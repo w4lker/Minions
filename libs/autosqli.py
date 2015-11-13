@@ -54,7 +54,8 @@ class AutoSqli(object):
             requests.post(url, data=json.dumps(payload), headers=headers).text)
         self.engineid = t['engineid']
         if len(str(self.engineid)) > 0 and t['success']:
-            sqlcmd = '''insert into webmanager_sqliscan (taskid,url,request,starttime,total,status)values('%s','%s','%s','%s',%f,'%s')''' % (self.taskid,self.target,get_raw_req(self.scan_flow),self.start_time,0.0,'running')
+            t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+            sqlcmd = '''insert into webmanager_sqliscan (taskid,url,request,time,status)values('%s','%s','%s','%s','%s')''' % (self.taskid,self.target,get_raw_req(self.scan_flow),t,'running')
             self.db.modify(self.cur,sqlcmd)
             print 'Started scan'
             return True
@@ -73,14 +74,23 @@ class AutoSqli(object):
     def scan_data(self):
         self.data = json.loads(
             requests.get(self.server + 'scan/' + self.taskid + '/data').text)['data']
-        if len(self.data) == 0:
-            sqlcmd = '''delete from webmanager_sqliscan where taskid = '%s' ''' % self.taskid 
-            self.db.modify(self.cur,sqlcmd)
-            print 'not injected:\t'
+        if self.status == 'terminated':
+            if len(self.data) == 0:
+                sqlcmd = '''delete from webmanager_sqliscan where taskid = '%s' ''' % self.taskid 
+                self.db.modify(self.cur,sqlcmd)
+                print 'not injected:\t'
+            else:
+                sqlcmd = '''update webmanager_sqliscan set status = 'injected' where taskid = '%s'  ''' % self.taskid
+                self.db.modify(self.cur,sqlcmd)
+                print 'injected:\t' + self.target
+        
+        elif self.status == 'timeout':
+            sqlcmd = '''update webmanager_sqliscan set status = 'timeout' where taskid = '%s'  ''' % self.taskid
+            self.db.modify(self.cur,sqlcmd) 
+        
         else:
-            sqlcmd = '''update webmanager_sqliscan set status = 'injected' where taskid = '%s'  ''' % self.taskid
-            self.db.modify(self.cur,sqlcmd)
-            print 'injected:\t' + self.target
+            sqlcmd = '''update webmanager_sqliscan set status = 'error' where taskid = '%s'  ''' % self.taskid
+            self.db.modify(self.cur,sqlcmd)              
 
     def option_set(self):
         headers = {'Content-Type': 'application/json'}
@@ -117,10 +127,16 @@ class AutoSqli(object):
             print time.time() - self.start_time
             if time.time() - self.start_time > 3000:
                 error = True
+                self.status = 'timeout'
                 self.scan_stop()
                 self.scan_kill()
                 break
         self.scan_data()
         self.task_delete()
         print time.time() - self.start_time
+    
+    def time_out(self):
+        if time.time() - self.start_time > 3000:   #超时时间后续可从数据库中读取，web平台中设置
+            
+            
 

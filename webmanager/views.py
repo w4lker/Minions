@@ -295,7 +295,7 @@ def vul_xss(request):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response
 
-def xss_poc(request,param):
+def vul_xss_poc(request,param):
     if request.session.get('username') != None:
         xss = Xsscan.objects.filter(taskid=param)
         return render(request, 'webmanager/template/xss_poc.html',{'page_title':'XSS PoC','xss':xss})     
@@ -304,16 +304,30 @@ def xss_poc(request,param):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response 
 
-def xss_del(request,param):
+def vul_xss_del(request,param):
+    rsp = {'hint':""}
     if request.session.get('username') != None:
-        xss = Xsscan.objects.filter(taskid=param)
-        xss.delete()
-        rsp = {'code':1,'hint':"删除成功"}
+        try:
+            xss = Xsscan.objects.filter(taskid=param)
+            xss.delete()
+        except Exception as e:
+            rsp['hint'] = e.message
+        else:
+            rsp['hint'] = "删除成功"
         return JsonResponse(rsp)       
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-        return response 
+        return response
+
+def vul_sqli(request):
+    if request.session.get('username') != None:
+        sqli = Sqliscan.objects.all()
+        return render(request, 'webmanager/template/vul_sqli.html',{'page_title':'XSS 扫描结果','sqli':sqli})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response
     
     
     
