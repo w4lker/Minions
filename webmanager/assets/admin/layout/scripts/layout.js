@@ -229,13 +229,13 @@ var Layout = function () {
                     }
 
                     Metronic.stopPageLoading();
-                    pageContentBody.html(res);
+                    pageContent.html(res);
                     Layout.fixContentHeight(); // fix content height
                     Metronic.initAjax(); // initialize core stuff
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     Metronic.stopPageLoading();
-                    pageContentBody.html('<h4>Could not load the requested content.</h4>');
+                    pageContent.html('<h4>sorry,the page is under construction</h4>');
                 }
             });
         });

@@ -68,7 +68,6 @@
 									<span class="help-block">目前只支持2级目录，/表示根目录</span>
 								</div>
 							</div>
-
 							<div class="form-group">
 								<label class="col-md-3 control-label">优先级</label>
 								<div class="col-md-4">
@@ -96,37 +95,35 @@
         </div>
     </div>
 </div>
-    <!-- END PAGE CONTENT-->
-    <script type="text/javascript" src="../../assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script> 
-    <!-- END PAGE LEVEL PLUGINS -->
-     
-    <!-- BEGIN PAGE LEVEL PLUGINS -->
-     
-    <script src="../../assets/admin/pages/scripts/myform-wizard.js"></script> 
-    <!-- END PAGE LEVEL STYLES -->
-     
-    <script>
-                jQuery(document).ready(function() {   
-                   // initiate layout and plugins
-                        FormWizard.init();
-                        $('.button-submit').click(function(e) {
-                            $.ajax({
-								type:"POST",
-								url :"/menu/edit/",
-								data:$("#menu_info").serialize(),
-								success: function (rsp) {
-									alert(rsp.hint);
-									if (rsp.code == 1){
-										$("#page_content").load("/menu/list", function() {
-											alert("2");
-										});
-									}
-                                       
-								}
-                            });
-                        });
-						$.ajaxSetup({cache: false});
-                });
-        
+<!-- END PAGE CONTENT-->
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script type="text/javascript" src="../../assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>      
+<script src="../../assets/admin/pages/scripts/myform-wizard.js"></script> 
+<!-- END PAGE LEVEL STYLES -->
+ 
+ <script>
+    jQuery(document).ready(function() {   
+        FormWizard.init();
+        $('.button-submit').click(function(e) {
+             $.ajax({
+				type:"POST",
+				url :"/settings/menu/edit/",
+				data:$("#menu_info").serialize(),
+				success: function (rsp) {
+					alert(rsp.hint);
+					$("#menuModal").hide();
+					if (rsp.code == 1){
+						$(".page-content").load("/settings/menu/list", function() {
+							Layout.fixContentHeight(); // fix content height
+							Metronic.initAjax(); // initialize core stuff
+							alert('2');
+						});
+					}                                       
+				}
+             });
+        });
+	$.ajaxSetup({cache: false});
+});      
 </script> 
     <!-- END JAVASCRIPTS -->

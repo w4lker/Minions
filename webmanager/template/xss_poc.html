@@ -1,4 +1,5 @@
-﻿<!-- BEGIN PAGE CONTENT-->
+﻿
+<!-- BEGIN PAGE CONTENT-->
     <div class="col-md-12 darkbluelightplus">
                 <!-- BEGIN VALIDATION STATES-->
              <div class="portlet-body darkbluelightplus">
@@ -33,15 +34,14 @@
 
         <!-- END PAGE CONTENT-->
 <script src="../../assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+<script src="../../assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
 
 <script>
 jQuery(document).ready(function() {   
    // initiate layout and plugins
 	
     $("table[name='poc_list']").DataTable({"iDisplayLength":5,destroy:true,"bLengthChange":false});
-	$.ajaxSetup({
-							cache: false
-						});
+	$.ajaxSetup({cache: false});
 	$("a[name='delete']").click(function(){
 		$.get($(this).attr("data-id"), function(rsp){
 			alert(rsp.hint);

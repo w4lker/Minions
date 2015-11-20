@@ -31,17 +31,19 @@ urlpatterns = [
     url(r'^data/proxy','webmanager.views.data_proxy',name='login1'),
     url(r'^data/replay','webmanager.views.data_replay',name='login1'),
     url(r'^data/details/(\d+)/$','webmanager.views.data_details',name='login1'),
-    url(r'^menu/list$','webmanager.views.menu_list',name='menu'),
-    url(r'^menu/edit/(\d*)','webmanager.views.menu_edit',name='menu'),
-    url(r'^menu/add','webmanager.views.menu_add',name='menu'),
-    url(r'^menu/del/(\d*)','webmanager.views.menu_del',name='menu'),
-    url(r'^vul/xss$','webmanager.views.vul_xss',name='vul'),
+    url(r'^settings/menu/list$','webmanager.views.settings_menu_list',name='settings'),
+    url(r'^settings/menu/edit/(\d*)','webmanager.views.settings_menu_edit',name='settings'),
+    url(r'^settings/menu/add','webmanager.views.settings_menu_add',name='settings'),
+    url(r'^settings/menu/del/(\d*)','webmanager.views.settings_menu_del',name='settings'),
+    url(r'^settings/modules/list$','webmanager.views.settings_modules_list',name='settings'),
+    url(r'^settings/modules/edit$','webmanager.views.settings_modules_edit',name='settings'),
+    url(r'^vul/xss/list$','webmanager.views.vul_xss_list',name='vul'),
     url(r'^vul/xss/poc/(.{32})','webmanager.views.vul_xss_poc',name='vul'),
     url(r'^vul/xss/del/(.{32})','webmanager.views.vul_xss_del',name='vul'),
-    url(r'^vul/sqli$','webmanager.views.vul_sqli',name='vul'),
-    url(r'^vul/sqli/del/(.{16})','webmanager.views.vul_sqli',name='vul'),
+    url(r'^vul/sqli/list$','webmanager.views.vul_sqli_list',name='vul'),
+    url(r'^vul/sqli/del/(.{16})','webmanager.views.vul_sqli_del',name='vul'),
     url(r'^ajax_test$','webmanager.views.ajax_test',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]
 
-#urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)  
+urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)  

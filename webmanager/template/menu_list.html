@@ -1,15 +1,16 @@
-﻿<!-- BEGIN PAGE CONTENT-->
-        <div class="row" id="menu_page">
+﻿{%include 'webmanager/template/header.html'%}
+<!-- BEGIN PAGE CONTENT-->
+        <div class="row">
             <div class="col-md-12">
                 <!-- BEGIN VALIDATION STATES-->
                 <div class="portlet light bordered">
                     <div class="portlet-title">
-                        <div class="caption">menu list</div>
+                        <div class="caption">菜单列表</div>
                         <div class="actions">
                         <a class="btn btn-circle btn-icon-only blue" href="javascript:;"></a> 
                         <a class="btn btn-circle btn-icon-only green" href="javascript:;"></a> 
 						<a href="#" data-url="/menu/list" class="btn btn-circle btn-sm green reload"><i class="fa fa-refresh"></i>Reflesh</a>
-						<a data-toggle="modal" data-target="#menuModal" href="/menu/add" class="btn btn-circle red-sunglo btn-sm" title="添加新菜单"><i class="fa fa-plus"></i> Add </a>
+						<a data-toggle="modal" data-target="#menuModal" href="/settings/menu/add" class="btn btn-circle red-sunglo btn-sm" title="添加新菜单"><i class="fa fa-plus"></i> Add </a>
                         <a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;" data-original-title=""
                         title=""></a> 
                         <a href="javascript:;" class="reload" data-original-title="" title=""></a> 
@@ -50,8 +51,8 @@
 								 
                                 <!--<td><a data-toggle="modal" data-target="#myModal" href="data/details/{{data.id}}"></a></td>-->
                                 <td>
-                                    <a data-toggle="modal" data-target="#menuModal" href="/menu/edit/{{menu.id}}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-									<a name="delete" title="删除" data-id="/menu/del/{{menu.id}}"><i class="fa fa-trash-o"></i></a>
+                                    <a data-toggle="modal" data-target="#menuModal" href="settings/menu/edit/{{menu.id}}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+									<a name="delete" title="删除" data-id="settings/menu/del/{{menu.id}}"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
 						 {% endfor %}
@@ -70,15 +71,13 @@
         </div>
         <!-- END VALIDATION STATES-->
         <!-- END PAGE CONTENT-->
-<script src="../../assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
-<script src="../../assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+<script src="../../assets/global/plugins/datatables/media/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="../../assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js" type="text/javascript"></script>
 <script>
 jQuery(document).ready(function() {   
    // initiate layout and plugins
     $("#menu_list").DataTable();
-	$.ajaxSetup({
-							cache: false
-						});
+	$.ajaxSetup({cache: false});
 	$("a[name='delete']").click(function(){
 		$.get($(this).attr("data-id"), function(rsp){
 			alert(rsp.hint);

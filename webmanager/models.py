@@ -20,9 +20,9 @@ class Proxydata(models.Model):
 
 class Settings(models.Model):
     id = models.IntegerField(primary_key=True)
+    module = models.CharField(max_length=50)
     setting = models.CharField(max_length=50)
-    enabled = models.BooleanField()
-    value = models.CharField(max_length=50)
+    value = models.CharField(max_length=50,blank=True,null=True)
     
 class Sqliscan(models.Model):
     id = models.IntegerField(primary_key=True)

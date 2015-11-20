@@ -135,8 +135,5 @@ class AutoSqli(object):
         self.task_delete()
         print time.time() - self.start_time
     
-    def time_out(self):
-        if time.time() - self.start_time > 3000:   #超时时间后续可从数据库中读取，web平台中设置
-            
-            
-
+    #def time_out(self):
+     #   if time.time() - self.start_time > 3000:   #超时时间后续可从数据库中读取，web平台中设置

@@ -64,7 +64,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- DOC: Apply "page-full-width" class to the body element to have full width page without the sidebar menu -->
 <body class="page-header-fixed page-quick-sidebar-over-content page-style-square page-footer-fixed navbar-fixed-left">
 <!-- BEGIN HEADER -->
-{%include 'webmanager/template/head1.html'%}
+{%include 'webmanager/template/header.html'%}
 <!-- END HEADER -->
 <div class="clearfix">
 </div>
@@ -279,7 +279,7 @@ jQuery(document).ready(function() {
    Index.initChat();
    Index.initMiniCharts();
    Tasks.initDashboardWidget();
-   $('.page-sidebar .ajaxify.start').click() // load the content for the dashboard page.
+   $('.page-sidebar .ajaxify.start').click(); // load the content for the dashboard page.
    $.ajaxSetup({
 		data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
 		cache: false

@@ -22,10 +22,18 @@ import magic
 
 
 class StickyMaster(controller.Master):
-    def __init__(self, server):
+    """
+    def __init__(self, server,proxy_enabled,negative_type,target):
         controller.Master.__init__(self, server)
         self.stickyhosts = {}
-
+        self.proxy_enabled = proxy_enabled
+        self.negative_type = negative_type
+        self.target = target
+    """
+    def __init__(self, server):
+        controller.Master.__init__(self, server)
+        self.stickyhosts = {}    
+        
     def run(self):
         try:
             return controller.Master.run(self)
@@ -47,24 +55,28 @@ class StickyMaster(controller.Master):
         if flow.response.headers["set-cookie"]:
             self.stickyhosts[hid] = flow.response.headers["set-cookie"]
         flow.reply()
-        db = database()
-        cur = db.connectdb('./db.sqlite3')
-        negative_type = db.query(cur,'''select value from webmanager_settings where setting='negative_type' ''')[0][0].split('|')
-        print negative_type
-        if flow.response.headers['content-type'] != []:
-            content_type = flow.response.headers['content-type'][0].split(';')[0].split('/')[1].lower()       #如content-type存在，过滤content-type类型为css等
-        else:
-            content_type = ''                                                            #不存在，过滤url中的文件类型类型为css等
-        file_type = urlparse.urlparse(flow.request.url)[2].split('.')[-1].lower()
-        if file_type not in negative_type:# and file_type not in negative_type:           
-            req = get_raw_req(flow)
-            rsp = get_raw_rsp(flow)
-            sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,timestamp)values(%d,'%s','%s','%s','%s','%s',%f)''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,flow.request.timestamp_start)
-            db.modify(cur,sqlcmd)    
-            db.closedb(cur)
-            v = Vulscan(flow)                  #调用扫描类，进行扫描，测试网站http://www.tjwfn.com/net_list.jsp?ieb12eki&zxlb=1
-            v.start()          
-
+        """
+        try:
+            db = database()
+            cur = db.connectdb('./db.sqlite3')
+            negative_type = db.query(cur,'''select value from webmanager_settings where setting='negative_type' ''')[0][0].split('|')
+            print negative_type
+            if flow.response.headers['content-type'] != []:
+                content_type = flow.response.headers['content-type'][0].split(';')[0].split('/')[1].lower()       #如content-type存在，过滤content-type类型为css等
+            else:
+                content_type = ''                                                            #不存在，过滤url中的文件类型类型为css等
+            file_type = urlparse.urlparse(flow.request.url)[2].split('.')[-1].lower()
+            if file_type not in negative_type:# and file_type not in negative_type:           
+                req = get_raw_req(flow)
+                rsp = get_raw_rsp(flow)
+                sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,timestamp)values(%d,'%s','%s','%s','%s','%s',%f)''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,flow.request.timestamp_start)
+                db.modify(cur,sqlcmd)    
+                db.closedb(cur)
+                v = Vulscan(flow)                  #调用扫描类，进行扫描，测试网站http://www.tjwfn.com/net_list.jsp?ieb12eki&zxlb=1
+                v.start()    
+        except Exception as e:
+            print e.message        
+        """
     
 
 

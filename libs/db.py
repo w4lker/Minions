@@ -29,11 +29,14 @@ class database:
             print "sqlCommand can not be null!"
    
     def  modify(self,cur,sql):
-        if sql is not None and sql != '':
-            cur.execute(sql)
-            self.conn.commit()
-        else:
-            print "sqlCommand can not be null!"        
+        try:
+            if sql is not None and sql != '':
+                cur.execute(sql)
+                self.conn.commit()
+            else:
+                print "sqlCommand can not be null!"
+        except Exception as e:
+            print e.message
             
             
     def injectPrevention(param):

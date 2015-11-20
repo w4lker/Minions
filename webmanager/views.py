@@ -24,7 +24,7 @@ def login(request):
 def index(request):
     if request.session.get('username') != None:
         menus = Menu.objects.order_by('pri').all()
-        return render(request, 'webmanager/template/indexa.html',{'page_title':'主页','menus':menus})
+        return render(request, 'webmanager/template/index.html',{'menus':menus})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
@@ -32,7 +32,8 @@ def index(request):
 
 def index_page(request):
     if request.session.get('username') != None:
-        return render(request, 'webmanager/template/index_page.html',{'page_title':'主页'})
+        title = 'Darshboard'
+        return render(request, 'webmanager/template/dashboard_page.html',{'title':title})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
@@ -67,11 +68,12 @@ def test(request):
     request.breadcrumbs([(("homepage"),'/'),  
                          (("activity"),'/activity/')  
                          ])  
-    return render(request,'webmanager/template/test.html', {'page_title':'just4test'})   
+    return render(request,'webmanager/template/test123.html', {'page_title':'just4test'})   
 
 def user_profile(request):
     if request.session.get('username') != None:
-        return render(request, 'webmanager/template/user_profile.html',{'username':request.session.get('username'),'page_title':'Userprofile'})
+        title = '用户管理'        
+        return render(request, 'webmanager/template/user_profile.html',{'username':request.session.get('username'),'title':title})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
@@ -101,26 +103,23 @@ def user_edit(request):
                         user.password = md5(request.POST['new_pass']).hexdigest()
                         user.save()
                         rsp['code'] = 1
-                        rsp['hint'] = '修改成功'
-                        #return response                         
+                        rsp['hint'] = '修改成功'                       
                             
                     else:
                         rsp['hint'] = '原密码错误'
-                        #return response    
             else:
-                rsp['hint'] = '请将表单填写完整！'
-                #return response            
+                rsp['hint'] = '请将表单填写完整！'          
             
         else:
             rsp['hint'] = '接头暗号：天王盖地虎,小鸡炖蘑菇!'
             response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-            #return response
         return JsonResponse(rsp)
 
 def data_proxy(request):
     if request.session.get('username') != None:
+        title = '数据详细' 
         data = Proxydata.objects.all()
-        return render(request, 'webmanager/template/data_proxy.html',{'page_title':'主页','proxydata':data})
+        return render(request, 'webmanager/template/data_proxy.html',{'title':title,'proxydata':data})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
@@ -192,16 +191,17 @@ def ajax_test(request):
     return JsonResponse(response)
 
 
-def menu_list(request):
+def settings_menu_list(request):
     if request.session.get('username') != None:
+        title = '系统设置' 
         mlist = Menu.objects.all()
-        return render(request, 'webmanager/template/menu_list.html',{'page_title':'菜单列表','mlist':mlist})
+        return render(request, 'webmanager/template/menu_list.html',{'title':title,'mlist':mlist})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response     
 
-def menu_edit(request,param):
+def settings_menu_edit(request,param):
     if request.session.get('username') != None:
         if request.method == 'GET':
             menu = Menu.objects.get(id=param)
@@ -214,12 +214,11 @@ def menu_edit(request,param):
             menu.title=request.POST['title']
             menu.href=request.POST['href']
             menu.fatherid = request.POST['fatherid']
-            print type(request.POST['fatherid'])
             if request.POST['fatherid'] == '0':
                 fathername = '/'
             else:
-                fathername = Menu.objects.get(id=request.POST['fatherid']).values('fathername')['fathername']
-            menu.fathername= fathername
+                fathername = Menu.objects.get(id=request.POST['fatherid']).title
+            menu.fathername = fathername
             print fathername
             menu.pri=request.POST['pri']
             menu.save()
@@ -231,7 +230,7 @@ def menu_edit(request,param):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response 
 
-def menu_reload(request):
+def settings_menu_reload(request):
     if request.session.get('username') != None:
         mlist = {"1":"test","2":"test2"}
         
@@ -243,7 +242,7 @@ def menu_reload(request):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response  
     
-def menu_add(request):
+def settings_menu_add(request):
     if request.session.get('username') != None:
         if request.method == 'GET':
             fathermenu = Menu.objects.filter(fatherid=0)
@@ -272,7 +271,7 @@ def menu_add(request):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response
 
-def menu_del(request,param):
+def settings_menu_del(request,param):
     if request.session.get('username') != None:
         menu = Menu.objects.get(id=param)
         if menu.fatherid == 0:
@@ -286,10 +285,11 @@ def menu_del(request,param):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response 
 
-def vul_xss(request):
+def vul_xss_list(request):
     if request.session.get('username') != None:
+        title = '漏洞信息' 
         xss = Xsscan.objects.raw('select * from webmanager_xsscan group by taskid')
-        return render(request, 'webmanager/template/vul_xss.html',{'page_title':'XSS 扫描结果','xss':xss})
+        return render(request, 'webmanager/template/vul_xss.html',{'title':title,'xss':xss})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
@@ -298,7 +298,7 @@ def vul_xss(request):
 def vul_xss_poc(request,param):
     if request.session.get('username') != None:
         xss = Xsscan.objects.filter(taskid=param)
-        return render(request, 'webmanager/template/xss_poc.html',{'page_title':'XSS PoC','xss':xss})     
+        return render(request, 'webmanager/template/xss_poc.html',{'xss':xss})     
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
@@ -320,14 +320,66 @@ def vul_xss_del(request,param):
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response
 
-def vul_sqli(request):
+def vul_sqli_list(request):
     if request.session.get('username') != None:
+        title = '漏洞信息' 
         sqli = Sqliscan.objects.all()
-        return render(request, 'webmanager/template/vul_sqli.html',{'page_title':'XSS 扫描结果','sqli':sqli})
+        return render(request, 'webmanager/template/vul_sqli.html',{'title':title,'sqli':sqli})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response
+
+def settings_modules_list(request):
+    if request.session.get('username') != None:
+        title = '系统设置' 
+        settings_list = Settings.objects.all().values('setting','value')
+        settings = {}
+        for setting in settings_list:
+            settings.setdefault(setting['setting'],setting['value'])
+        return render(request, 'webmanager/template/settings_modules_list.html',{'title':title,'settings':settings})
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response
+
+def settings_modules_edit(request):
+    if request.session.get('username') != None:
+        rsp = {'code':0,'hint':''}
+        if request.POST['module'] == 'proxy':
+            Settings.objects.filter(setting='proxy_enabled').update(value=request.POST['proxy_enabled'])
+            Settings.objects.filter(setting='port').update(value=request.POST['port'])
+            
+            if request.POST['upstream_enabled'] == 'true':
+                Settings.objects.filter(setting='upstream_enabled').update(value=request.POST['upstream_enabled'])
+                Settings.objects.filter(setting='upstream_proxy').update(value=request.POST['upstream_proxy'])
+            Settings.objects.filter(setting='negative_type').update(value=request.POST['negative_type'])
+            Settings.objects.filter(setting='target').update(value=request.POST['target'])
+            
+        elif request.POST['module'] == 'sqlmap':
+            Settings.objects.filter(setting='sqlmap_enabled').update(value=request.POST['sqlmap_enabled'])
+            Settings.objects.filter(setting='server').update(value=request.POST['server'])
+            Settings.objects.filter(setting='level').update(value=request.POST['level'])
+            Settings.objects.filter(setting='risk').update(value=request.POST['risk'])
+            
+        elif request.POST['module'] == 'xss':
+            Settings.objects.filter(setting='xss_enabled').update(value=request.POST['xss_enabled'])
+            Settings.objects.filter(setting='heuristic').update(value=request.POST['heuristic'])
+            Settings.objects.filter(setting='payloads').update(value=request.POST['payloads'])      
+        
+        else:
+            rsp['hint'] = '修改失败，没有该模块!'
+            rsp['code'] = 0
+            return JsonResponse(rsp)             
+            
+        rsp['hint'] = '修改成功!'
+        rsp['code'] = 1
+        return JsonResponse(rsp)         
+        
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response 
     
     
     
