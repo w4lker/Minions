@@ -49,6 +49,13 @@ class Menu(models.Model):
     fathername = models.CharField(max_length=20,blank=True,null=True)
     pri = models.IntegerField()
     
+class SysExceptions(models.Model):
+    id = models.IntegerField(primary_key=True)
+    traceback = models.CharField(max_length=100)
+    errmessage = models.CharField(max_length=100)
+    time = models.DateTimeField(auto_now_add=True)
+    
+    
     
     
 

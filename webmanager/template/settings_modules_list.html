@@ -120,9 +120,9 @@
 														</div>
 														<div class="col-md-3">
 															{%ifequal settings.upstream_enabled 'true'%}
-															<input class="form-control" type="text" name="upstream_proxy" placeholder="a.com.cn:8088" value="{{settings.upstream_proxy}}"></input>
+															<input class="form-control" type="text" name="upstream_proxy" placeholder="a.com.cn:8080" value="{{settings.upstream_proxy}}"></input>
 															{%else%}
-															<input class="form-control" type="text" name="upstream_proxy" disabled="true" placeholder="a.com.cn:8088" value="{{settings.upstream_proxy}}"></input>
+															<input class="form-control" type="text" name="upstream_proxy" disabled="true" placeholder="a.com.cn:8080" value="{{settings.upstream_proxy}}"></input>
 															{%endifequal%}
 														</div>
 														

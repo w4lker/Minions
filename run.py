@@ -10,6 +10,7 @@ from myproxy.myproxy import StickyMaster
 from libs.flowhandle import *
 from libs.db import database
 
+
 """
 db = database()
 cur = db.connectdb('./db.sqlite3')
@@ -49,13 +50,23 @@ from myproxy.myproxy import StickyMaster
 from libs.flowhandle import *
 
 
-u_s = [False, False,"proxy.zte.com.cn", 80]
+db = database()
+cur = db.connectdb('./db.sqlite3')
+settings = dict(db.query(cur,'''select setting,value from webmanager_settings where module='proxy' '''))
+db.closedb(cur)
+
+
 c_d = os.path.expanduser("~/.mitmproxy/")
 
-config = proxy.ProxyConfig(mode='upstream',port=8088,upstream_server=u_s)
-#config = proxy.ProxyConfig(port=8088)
+if settings['upstream_enabled'] == 'true':
+    upstream_proxy = settings['upstream_proxy'].split(':')
+    u_s = ['http',(upstream_proxy[0],int(upstream_proxy[1]))]
+    config = proxy.ProxyConfig(mode='upstream',port=int(settings['port']),upstream_server=u_s,cadir=c_d)
+else:
+    config = proxy.ProxyConfig(port=int(settings['port']))
+    
 server = ProxyServer(config)
-m = StickyMaster(server)
+m = StickyMaster(server,proxy_enabled=settings['proxy_enabled'],negative_type=settings['negative_type'],target=settings['target'])
 m.run()
 
 

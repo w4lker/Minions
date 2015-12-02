@@ -15,7 +15,7 @@ class AutoSqli(object):
     By Manning
     """
 
-    def __init__(self, server='', scan_flow =''):
+    def __init__(self, server='', scan_flow ='',level=1,risk=1,proxy=None):
         super(AutoSqli, self).__init__()
         self.server = server
         if self.server[-1] != '/':
@@ -25,12 +25,19 @@ class AutoSqli(object):
         self.taskid = ''
         self.engineid = ''
         self.status = ''
+        self.headers = dict(scan_flow.request.headers)
         self.data = scan_flow.request.body
-        self.referer = scan_flow.request.headers['referer']
-        self.cookie = scan_flow.request.headers['cookie']
+        #self.referer = scan_flow.request.headers['referer']
+        if 'cookie' in scan_flow.request.headers:
+            self.cookie = scan_flow.request.headers['cookie']
+        else:
+            self.cookie = ''
         self.start_time = time.time()
         self.db = database()
         self.cur = self.db.connectdb('./db.sqlite3')
+        self.level = level
+        self.risk = risk
+        self.proxy = proxy
 
     def task_new(self):
         self.taskid = json.loads(
@@ -48,7 +55,7 @@ class AutoSqli(object):
 
     def scan_start(self):
         headers = {'Content-Type': 'application/json'}
-        payload = {'url': self.target,'body':self.data}
+        payload = self.scan_payload()
         url = self.server + 'scan/' + self.taskid + '/start'
         t = json.loads(
             requests.post(url, data=json.dumps(payload), headers=headers).text)
@@ -60,6 +67,17 @@ class AutoSqli(object):
             print 'Started scan'
             return True
         return False
+    
+    def scan_payload(self):
+        payload = {
+                  'url': self.target,
+                  'data': self.data,
+                  'level': int(self.level),
+                  'risk': int(self.risk),
+                  'cookie': self.cookie,
+                  'proxy': self.proxy
+               }
+        return payload
 
     def scan_status(self):
         self.status = json.loads(
@@ -95,7 +113,7 @@ class AutoSqli(object):
     def option_set(self):
         headers = {'Content-Type': 'application/json'}
         option = {"options": {
-                    "smart": True,
+                    'smart':True,
                     }
                  }
         url = self.server + 'option/' + self.taskid + '/set'

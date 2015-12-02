@@ -19,7 +19,7 @@ class XsserScan(object):
         options.heuristic = True
         if self.flow.request.body != '':
             options.postdata = self.flow.request.body
-        options.headers = get_req_header(self.flow)        
+        options.headers = str(self.flow.request.headers)    
         if options:
             app.set_options(options)
             app.run()

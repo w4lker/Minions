@@ -10,6 +10,7 @@ import os
 import string
 import sys
 import urlparse
+import traceback
 from libmproxy import controller, proxy
 from libmproxy.proxy.server import ProxyServer
 from libs.db import database
@@ -22,17 +23,14 @@ import magic
 
 
 class StickyMaster(controller.Master):
-    """
+
     def __init__(self, server,proxy_enabled,negative_type,target):
         controller.Master.__init__(self, server)
         self.stickyhosts = {}
         self.proxy_enabled = proxy_enabled
         self.negative_type = negative_type
         self.target = target
-    """
-    def __init__(self, server):
-        controller.Master.__init__(self, server)
-        self.stickyhosts = {}    
+
         
     def run(self):
         try:
@@ -42,42 +40,51 @@ class StickyMaster(controller.Master):
 
     def handle_request(self, flow):
         hid = (flow.request.host, flow.request.port)
-        if flow.request.headers["cookie"]:
-            self.stickyhosts[hid] = flow.request.headers["cookie"]
+        if "cookie" in flow.request.headers:
+            self.stickyhosts[hid] = flow.request.headers.get_all("cookie")
         elif hid in self.stickyhosts:
-            flow.request.headers["cookie"] = self.stickyhosts[hid]
-        flow.reply()      
-        
-    def handle_response(self, flow):
-        
-        hid = (flow.request.host, flow.request.port)
-                  
-        if flow.response.headers["set-cookie"]:
-            self.stickyhosts[hid] = flow.response.headers["set-cookie"]
+            flow.request.headers.set_all("cookie", self.stickyhosts[hid])
         flow.reply()
-        """
+
+    def handle_response(self, flow):
+        print flow.request.url
+        hid = (flow.request.host, flow.request.port)
+        if "set-cookie" in flow.response.headers:
+            self.stickyhosts[hid] = flow.response.headers.get_all("set-cookie")
+        flow.reply()
+        
         try:
-            db = database()
-            cur = db.connectdb('./db.sqlite3')
-            negative_type = db.query(cur,'''select value from webmanager_settings where setting='negative_type' ''')[0][0].split('|')
-            print negative_type
-            if flow.response.headers['content-type'] != []:
-                content_type = flow.response.headers['content-type'][0].split(';')[0].split('/')[1].lower()       #如content-type存在，过滤content-type类型为css等
-            else:
-                content_type = ''                                                            #不存在，过滤url中的文件类型类型为css等
-            file_type = urlparse.urlparse(flow.request.url)[2].split('.')[-1].lower()
-            if file_type not in negative_type:# and file_type not in negative_type:           
-                req = get_raw_req(flow)
-                rsp = get_raw_rsp(flow)
-                sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,timestamp)values(%d,'%s','%s','%s','%s','%s',%f)''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,flow.request.timestamp_start)
-                db.modify(cur,sqlcmd)    
-                db.closedb(cur)
-                v = Vulscan(flow)                  #调用扫描类，进行扫描，测试网站http://www.tjwfn.com/net_list.jsp?ieb12eki&zxlb=1
-                v.start()    
+            if self.target == '' or flow.request.host in self.target.split(';'):
+                if 'content-type' in flow.response.headers:
+                    content_type = flow.response.headers['content-type'].split(';')[0] 
+                else:
+                    m = magic.Magic(magic_file=r'C:\python27\magicfile\magic',mime=True)
+                    content_type = m.from_buffer(flow.response.body)
+                
+                file_type = urlparse.urlparse(flow.request.url)[2].split('.')[-1].lower()
+                
+                if content_type != 'text/html' or file_type in self.negative_type:
+                    print 'negative content-type!'
+                
+                else:
+                    v = Vulscan(flow)                  #调用扫描类，进行扫描，测试网站http://www.tjwfn.com/net_list.jsp?ieb12eki&zxlb=1
+                    v.start()                    
+                    if self.proxy_enabled == 'true':
+                        req = get_raw_req(flow)
+                        rsp = get_raw_rsp(flow)
+                        db = database()
+                        cur = db.connectdb('./db.sqlite3')                        
+                        sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,timestamp)values(%d,'%s','%s','%s','%s','%s',%f)''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,flow.request.timestamp_start)
+                        db.modify(cur,sqlcmd)    
+                        db.closedb(cur)   
+                
         except Exception as e:
-            print e.message        
-        """
-    
-
-
-
+            db = database()
+            cur = db.connectdb('./db.sqlite3')   
+            tb = traceback.format_exc().replace("'","''")
+            message = e.message
+            sqlcmd = '''insert into webmanager_sysexceptions(traceback,errmessage,time)values('%s','%s','%s')''' % (tb,message,time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+            db.modify(cur,sqlcmd)
+            db.closedb(cur)
+        
+                       
