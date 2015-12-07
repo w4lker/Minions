@@ -16,7 +16,7 @@ class Proxydata(models.Model):
     url = models.CharField(max_length=50)
     request = models.TextField()
     response = models.TextField(null=True)
-    timestamp = models.FloatField()
+    time = models.DateTimeField(auto_now_add=True)
 
 class Settings(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -49,14 +49,16 @@ class Menu(models.Model):
     fathername = models.CharField(max_length=20,blank=True,null=True)
     pri = models.IntegerField()
     
-class SysExceptions(models.Model):
+class Sysexceptions(models.Model):
     id = models.IntegerField(primary_key=True)
     traceback = models.CharField(max_length=100)
     errmessage = models.CharField(max_length=100)
     time = models.DateTimeField(auto_now_add=True)
     
-    
-    
+class Devlog(models.Model):
+    id = models.IntegerField(primary_key=True)
+    date = models.DateField(max_length=30,auto_now_add=True)
+    items = models.TextField(max_length=100)
     
 
     

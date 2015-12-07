@@ -42,6 +42,8 @@ urlpatterns = [
     url(r'^vul/xss/del/(.{32})','webmanager.views.vul_xss_del',name='vul'),
     url(r'^vul/sqli/list$','webmanager.views.vul_sqli_list',name='vul'),
     url(r'^vul/sqli/del/(.{16})','webmanager.views.vul_sqli_del',name='vul'),
+    url(r'^logs/developer/add','webmanager.views.logs_developer_add',name='logs'),
+    url(r'^logs/sysinfo/query','webmanager.views.logs_sysinfo_query',name='logs'),
     url(r'^ajax_test$','webmanager.views.ajax_test',name='login1'),
     url(r'^\s?\s?$','webmanager.views.index',name='login'),
 ]

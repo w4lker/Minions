@@ -13,9 +13,9 @@
 <!-- END PAGE HEADER-->
 <div class="clearfix"></div>
 <div class="row" id="menu_page">
-    <div class="col-md-12 panel-warning">
+    <div class="col-md-12">
                 <!-- BEGIN VALIDATION STATES-->
-                <div class="portlet light bordered container panel-warning" >
+                <div class="portlet light bordered" >
                     <div class="portlet-title">
                         <div class="caption">Xsscan Result</div>
                         <div class="actions">
@@ -115,7 +115,7 @@ jQuery(document).ready(function() {
 		});
 
     });
-	$("#xss_list").DataTable();
+	$("#xss_list").DataTable({'aaSorting':[[4,'desc']]});
 	$.ajaxSetup({cache: false});
 	$("a[name='delete']").click(function(){
 		var e = $(this);

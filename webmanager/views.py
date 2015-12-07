@@ -33,11 +33,14 @@ def index(request):
 def index_page(request):
     if request.session.get('username') != None:
         title = 'Darshboard'
-        return render(request, 'webmanager/template/dashboard_page.html',{'title':title})
+        logs = Devlog.objects.order_by('-id').all()
+        sysinfo = get_sysinfo()
+        return render(request, 'webmanager/template/test_index.html',{'title':title,'logs':logs,'sysinfo':sysinfo})
     else:
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
-        return response      
+        return response
+  
 
 def login_check(request):
     user = Users.objects.get(id=1)
@@ -118,7 +121,7 @@ def user_edit(request):
 def data_proxy(request):
     if request.session.get('username') != None:
         title = '数据详细' 
-        data = Proxydata.objects.all()
+        data = Proxydata.objects.order_by('-id').all()
         return render(request, 'webmanager/template/data_proxy.html',{'title':title,'proxydata':data})
     else:
         response = HttpResponse()
@@ -288,7 +291,7 @@ def settings_menu_del(request,param):
 def vul_xss_list(request):
     if request.session.get('username') != None:
         title = '漏洞信息' 
-        xss = Xsscan.objects.raw('select * from webmanager_xsscan group by taskid')
+        xss = Xsscan.objects.raw('select * from webmanager_xsscan group by taskid order by id desc')
         return render(request, 'webmanager/template/vul_xss.html',{'title':title,'xss':xss})
     else:
         response = HttpResponse()
@@ -323,7 +326,7 @@ def vul_xss_del(request,param):
 def vul_sqli_list(request):
     if request.session.get('username') != None:
         title = '漏洞信息' 
-        sqli = Sqliscan.objects.all()
+        sqli = Sqliscan.objects.order_by('taskid').all()
         return render(request, 'webmanager/template/vul_sqli.html',{'title':title,'sqli':sqli})
     else:
         response = HttpResponse()
@@ -380,6 +383,40 @@ def settings_modules_edit(request):
         response = HttpResponse()
         response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
         return response 
+
+
+def logs_developer_add(request):
+    if request.session.get('username') != None:
+        if request.POST['logs'] !='':
+            Devlog(items=request.POST['logs']).save()
+            rsp = {'code':''}
+            rsp['code'] = 1
+            return JsonResponse(rsp)             
+    else:
+        response = HttpResponse()
+        response.write('<html><script type="text/javascript">alert("接头暗号：天王盖地虎,小鸡炖蘑菇!"); window.location="/login"</script></html>')
+        return response 
+
+def logs_sysinfo_query(request):
+    rsp = get_sysinfo()
+    print rsp
+    return JsonResponse(rsp)
+
+def get_sysinfo():
+    import psutil  
+    import os  
+    
+    sysinfo = {'cpu':0.0,'memory':0.0,'disk':0.0,'sqli':0,'xss':0,'enumeration':0,'fingerprint':0}
+    #打印CPU的占用率 
+    sysinfo['cpu'] = psutil.cpu_percent(0.5)   
+    #本机内存的总占用率
+    sysinfo['memory'] = psutil.virtual_memory().percent    
+    #本机硬盘的总占用率
+    sysinfo['disk'] = psutil.disk_usage('/').percent
+    sysinfo['sqli'] = Sqliscan.objects.filter(status='injected').count()
+    sysinfo['xss'] = len(list(Xsscan.objects.raw('select * from webmanager_xsscan group by taskid')))
+    return sysinfo
+    
     
     
     

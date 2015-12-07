@@ -28,6 +28,7 @@
                 <th>host</th>
                 <th>URL</th>
 				<th>status</th>
+				<th>time</th>
                 <th>details</th>
             </tr>
         </thead>
@@ -38,6 +39,7 @@
                 <th>host</th>
                 <th>URL</th>
 				<th>status</th>
+				<th>time</th>
                 <th>details</th>
             </tr>
             </tr>
@@ -52,6 +54,7 @@
 											<td>{{data.host}}</td>
 											<td class="text-justify">{{data.url}}</td>
 											<td>{{data.status_code}}</td>
+											<td>{{data.time|date:"Y-m-d H:i:s"}}
 											<!--<td><a data-toggle="modal" data-target="#myModal" href="data/details/{{data.id}}">详情</a></td>-->
 											<td><a data-toggle="modal" data-target="#myModal" href="data/details/{{data.id}}/">详情</a></td>
 										</tr>
@@ -84,7 +87,7 @@
 <script>
 jQuery(document).ready(function() {   
    // initiate layout and plugins
-	$('#example').DataTable();
+	$('#example').DataTable({'aaSorting':[[5,'desc']]});
 	$.ajaxSetup({
 			data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
 		});

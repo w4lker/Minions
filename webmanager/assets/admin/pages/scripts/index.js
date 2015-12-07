@@ -472,11 +472,22 @@ var Index = function () {
             });
 
             $('.easy-pie-chart-reload').click(function () {
-                $('.easy-pie-chart .number').each(function () {
+                /*
+				$('.easy-pie-chart .number').each(function () {
                     var newValue = Math.floor(100 * Math.random());
                     $(this).data('easyPieChart').update(newValue);
                     $('span', this).text(newValue);
                 });
+				*/
+				$.get('logs/sysinfo/query',function(rsp){
+					$('.easy-pie-chart .number.transactions').data('easyPieChart').update(rsp.cpu);
+					$('.easy-pie-chart .number.transactions').children('span').text(rsp.cpu);
+					$('.easy-pie-chart .number.visits').data('easyPieChart').update(rsp.memory);
+					$('.easy-pie-chart .number.visits').children('span').text(rsp.memory);
+					$('.easy-pie-chart .number.bounce').data('easyPieChart').update(rsp.disk);
+					$('.easy-pie-chart .number.bounce').children('span').text(rsp.disk);
+					//$('.easy-pie-chart .number visit')
+				});
             });
 
             $("#sparkline_bar").sparkline([8, 9, 10, 11, 10, 10, 12, 10, 10, 11, 9, 12, 11, 10, 9, 11, 13, 13, 12], {

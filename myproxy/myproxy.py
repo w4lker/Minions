@@ -73,8 +73,9 @@ class StickyMaster(controller.Master):
                         req = get_raw_req(flow)
                         rsp = get_raw_rsp(flow)
                         db = database()
-                        cur = db.connectdb('./db.sqlite3')                        
-                        sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,timestamp)values(%d,'%s','%s','%s','%s','%s',%f)''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,flow.request.timestamp_start)
+                        cur = db.connectdb('./db.sqlite3')
+                        t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+                        sqlcmd = '''insert into webmanager_proxydata(status_code,method,host,url,request,response,time)values(%d,'%s','%s','%s','%s','%s','%s')''' % (flow.response.status_code,flow.request.method,flow.request.host,flow.request.url,req,rsp,t)
                         db.modify(cur,sqlcmd)    
                         db.closedb(cur)   
                 

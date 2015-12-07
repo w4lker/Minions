@@ -122,7 +122,7 @@
 <script>
 jQuery(document).ready(function() {   
    // initiate layout and plugins
-	$('#SQLi_list').DataTable();
+	$('#SQLi_list').DataTable({'aaSorting':[[2,'desc']]});
 	$.ajaxSetup({
 			data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
 		});

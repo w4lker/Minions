@@ -262,12 +262,14 @@ var Layout = function () {
                 dataType: "html",
                 success: function (res) {
                     Metronic.stopPageLoading();
-                    pageContentBody.html(res);
+                    //pageContentBody.html(res);
+					pageContent.html(res);
                     Layout.fixContentHeight(); // fix content height
                     Metronic.initAjax(); // initialize core stuff
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    pageContentBody.html('<h4>Could not load the requested content.</h4>');
+                    //pageContentBody.html('<h4>Could not load the requested content.</h4>');
+					pageContent.html('<h4>Could not load the requested content.</h4>');
                     Metronic.stopPageLoading();
                 }
             });
