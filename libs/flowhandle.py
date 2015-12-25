@@ -41,10 +41,19 @@ def get_raw_rsp(flow):
     if content_type in negative_type:
         body = base64.b64encode(body)
     else:
-    """
+    
     if chardet.detect(body)['encoding']:
         encode_type = chardet.detect(body)['encoding']
-        body = body.decode(encode_type,'replace')        
+        body = body.decode(encode_type,'replace') 
+    """
+    body = autodecode(body)
     rsp = headers + '\n' + body
     rsp = rsp.replace("'","''")
     return rsp
+
+def autodecode(encode_str):
+    if chardet.detect(encode_str)['encoding']:
+        encode_type = chardet.detect(encode_str)['encoding']
+        decode_str = encode_str.decode(encode_type,'replace')
+        return decode_str
+    return encode_str

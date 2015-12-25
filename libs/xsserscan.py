@@ -1,6 +1,11 @@
+#coding:utf-8
+
 from libs.xsscan.main import xsser
 from libs.flowhandle import *
 from libmproxy import flow
+from netlib import odict
+
+from urllib import urlencode
 
 class XsserScan(object):
     def __init__(self,scan_flow = ''):
@@ -14,12 +19,21 @@ class XsserScan(object):
     def run(self):
         app = xsser()
         options = app.create_options()
-        options.url = self.flow.request.url
+        if isinstance(self.flow.request.query,odict.ODict):
+            options.getdata = urlencode(self.flow.request.query)
+        if self.flow.request.url.find('?') == -1:
+            options.url = self.flow.request.url
+        else:
+            options.url = self.flow.request.url[:self.flow.request.url.find('?') + 1]
         options.fuzz = True
         options.heuristic = True
+        options.threads = 20
         if self.flow.request.body != '':
             options.postdata = self.flow.request.body
-        options.headers = str(self.flow.request.headers)    
+        if "cookie" in self.flow.request.headers:
+            options.cookie = self.flow.request.headers.get("cookie")
+        if options.getdata == None and options.postdata == None:
+            return
         if options:
             app.set_options(options)
             app.run()

@@ -616,23 +616,44 @@ class xsser(EncoderDecoder, XSSerReporter):
         def _error_cb(request, error):
             self.error_attack_url_payload(c, url, request, error)
 
-        if self.options.getdata or not self.options.postdata:
-            dest_url, newhash = self.get_url_payload(url, payload, query_string)
-            #self.report(dest_url)
-            self._prepare_extra_attacks()
-            pool.addRequest(c.get, [dest_url], _cb, _error_cb)
-            self._ongoing_requests += 1
-            #c.get(dest_url)
+        if self.options.getdata and not self.options.postdata:
+            query = query_string.split('&')
+            for q in query:
+                payload_url, newhash = self.get_url_payload(url, payload, q)
+                #self.report(dest_url)
+                partion = query_string.partition(q)
+                dest_url = payload_url + '&' + (partion[0].strip('&') + '&' + partion[2].strip('&')).strip('&')
+                print dest_url
+                self._prepare_extra_attacks()
+                pool.addRequest(c.get, [[dest_url]], _cb, _error_cb)
+                self._ongoing_requests += 1
+                #c.get(dest_url)
 
         if self.options.postdata:
-            dest_url, newhash = self.get_url_payload("", payload, query_string)
-            dest_url = dest_url.strip().replace("/", "", 1)
-            self.report("\nSending POST:", query_string, "\n")
-            data = c.post(url, dest_url)
-            self._prepare_extra_attacks()
-            pool.addRequest(c.get, [dest_url], _cb, _error_cb)
-            self._ongoing_requests += 1
-            #c.post(url, dest_url)
+            r_type = r'{.*}'
+            if re.match(r_type,self.options.postdata):
+                postdata = ast.literal_eval(self.options.postdata)
+                for key,value in postdata.items():
+                    postdata_copy = postdata.copy()
+                    payload_data, newhash = self.get_url_payload("", payload, str(value))
+                    postdata_copy[key] = payload_data
+                    self.report("\nSending POST:", postdata_copy, "\n")
+                    #data = c.post(url, str(postdata_copy))
+                    self._prepare_extra_attacks()
+                    pool.addRequest(c.post, [[url,str(postdata_copy)]], _cb, _error_cb)
+                    self._ongoing_requests += 1
+            else:
+                query = query_string.split('&')
+                for q in query:
+                    payload_data, newhash = self.get_url_payload("", payload, q)
+                    partion = query_string.partition(q)
+                    payload_data = payload_data.strip().replace("/", "", 1)
+                    payload_data = payload_data + '&' + (partion[0].strip('&') + '&' + partion[2].strip('&')).strip('&')
+                    self.report("\nSending POST:", query_string, "\n")
+                    #data = c.post(url, payload_data)
+                    self._prepare_extra_attacks()
+                    pool.addRequest(c.post, [[url,payload_data]], _cb, _error_cb)
+                    self._ongoing_requests += 1
 
     def error_attack_url_payload(self, c, url, request, error):
         self._ongoing_requests -= 1
@@ -647,8 +668,10 @@ class xsser(EncoderDecoder, XSSerReporter):
         self.report(str(error[0]))
         if DEBUG:
             traceback.print_tb(error[2])
-        c.close()
-        del c
+        
+        if self._ongoing_requests == 0:
+            c.close()
+            del c
         return
 
     def finish_attack_url_payload(self, c, request, result, payload,
@@ -735,14 +758,21 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.report("[-] Parameter(s):", query_string, "\n")
 
         # perform normal injection
-        if c.info()["http-code"] in ["200", "302", "301"]:
+        if c.info()["http-code"] in ["200"]:
             if self.options.statistics:
                 self.success_connection = self.success_connection + 1
             self._report_attack_success(c, dest_url, payload,
                                         query_string, url, orig_hash)
-        else:
-            self._report_attack_failure(c, dest_url, payload,
-                                        query_string, url, orig_hash)
+        elif c.info()["http-code"] in ["302", "301"]:
+            print c.info()["redirecturl"]
+            redirect_url = c.info()["redirecturl"]
+            redirect_c = Curl(base_url=redirect_url)
+            redirect_c.cookie = self.options.cookie
+            redirect_c.get()
+            if self.options.statistics:
+                self.success_connection = self.success_connection + 1
+            self._report_attack_success(redirect_c, dest_url, payload,
+                                            query_string, url, orig_hash)	        
 
         # checking response results 
         if self.options.alt == None:
@@ -785,9 +815,9 @@ class xsser(EncoderDecoder, XSSerReporter):
             else:
                 self._report_attack_failure(c, dest_url, payload,
                                             query_string, url, orig_hash)
-
-        c.close()
-        del c
+        if self._ongoing_requests == 0:
+            c.close()
+            del c
 
         # jumper system
         #if self.options.jumper <= 0:
@@ -1399,9 +1429,9 @@ class xsser(EncoderDecoder, XSSerReporter):
             options = self.create_options(opts)
             self.set_options(options)
 
-        if not self.mothership and not self.hub:
-            self.hub = HubThread(self)
-            self.hub.start()
+        #if not self.mothership and not self.hub:
+            #self.hub = HubThread(self)
+            #self.hub.start()
 
         options = self.options
         # step 0: third party tricks

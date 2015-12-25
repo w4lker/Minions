@@ -424,6 +424,7 @@ class Curl:
         m['total-time'] = str(self.handle.getinfo(pycurl.TOTAL_TIME))
         m['namelookup-time'] = str(self.handle.getinfo(pycurl.NAMELOOKUP_TIME))
         m['connect-time'] = str(self.handle.getinfo(pycurl.CONNECT_TIME))
+        m['redirecturl'] = str(self.handle.getinfo(pycurl.REDIRECT_URL))
         #m['pretransfer-time'] = str(self.handle.getinfo(pycurl.PRETRANSFER_TIME))
         #m['redirect-time'] = str(self.handle.getinfo(pycurl.REDIRECT_TIME))
         #m['redirect-count'] = str(self.handle.getinfo(pycurl.REDIRECT_COUNT))

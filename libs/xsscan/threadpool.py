@@ -118,6 +118,20 @@ def makeRequests(callable_, args_list, callback=None,
     ``exc_callback``.
 
     """
+    #requests = []
+    #for item in args_list:
+        #if isinstance(item, tuple):
+            #requests.append(
+                #WorkRequest(callable_, item[0], item[1], callback=callback,
+                    #exc_callback=exc_callback)
+            #)
+        #else:
+            #requests.append(
+                #WorkRequest(callable_, [item], None, callback=callback,
+                    #exc_callback=exc_callback)
+            #)
+    #return requests
+
     requests = []
     for item in args_list:
         if isinstance(item, tuple):
@@ -127,7 +141,7 @@ def makeRequests(callable_, args_list, callback=None,
             )
         else:
             requests.append(
-                WorkRequest(callable_, [item], None, callback=callback,
+                WorkRequest(callable_, item, None, callback=callback,
                     exc_callback=exc_callback)
             )
     return requests
@@ -179,9 +193,11 @@ class WorkerThread(threading.Thread):
                 try:
                     result = request.callable(*request.args, **request.kwds)
                     self._results_queue.put((request, result))
-                except:
+                except Exception as e:
                     request.exception = True
                     self._results_queue.put((request, sys.exc_info()))
+                    print traceback.format_exc()
+                    print e.message
 
     def dismiss(self):
         """Sets a flag to tell the thread to exit when done with current job."""
